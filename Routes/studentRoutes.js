@@ -167,4 +167,26 @@ router.put('/updateStudent', async (req, res) => {
      }
 });
 
+
+// 4.Delete APIs
+router.delete('/deleteStudent', async (req, res) => {
+     const { studentId } = req.body;
+     if (!studentId) {
+          return res.status(400).json({ status: "error", message: "Student ID is required" });
+     }
+     try {
+          const deleteStudent = await StudentInfo.findOneAndDelete({ studentId });
+          if (!deleteStudent) {
+               return res.status(404).json({ status: "error", message: "Student not found" });
+          }
+          console.log("Deleted student:", deleteStudent);
+          res.status(200).json({ status: "success", message: "Student deleted successfully" });
+     } catch (error) {
+          console.error("Error deleting student:", error);
+          res.status(500).json({ status: "error", message: "Internal Server Error" });
+     }
+});
+
+
+
 module.exports = router;
