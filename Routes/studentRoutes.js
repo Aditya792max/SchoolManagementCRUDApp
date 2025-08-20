@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const StudentInfo = require('../Schemas/studentDetails');
-
+const BranchInfo = require('../Schemas/BranchDetails');
 
 /*  
      API information
@@ -184,6 +184,104 @@ router.delete('/deleteStudent', async (req, res) => {
      } catch (error) {
           console.error("Error deleting student:", error);
           res.status(500).json({ status: "error", message: "Internal Server Error" });
+     }
+});
+
+
+// TRYING TO CREATE AN API THAT TAKES BOTH MODULES AND GIVES ME INFORMATION
+// router.get('/getStudentByBranch', (req, res) = {
+//      const { branchName } = req.body;
+//      if(!branchName) {
+//           return res.status(400).json({
+//                status: "Error",
+//                message: "Please Enter a valid BranchName"
+//           });
+//      }
+
+// });
+
+router.get('/getStudentByBranch', async (req, res) => {
+     const { branchName } = req.body;
+
+     if (!branchName) {
+          return res.status(400).json({
+               status: "Error",
+               message: "Please enter a valid BranchName"
+          });
+     }
+
+     try {
+          const students = await StudentInfo.find({ studentBranch: branchName });
+
+          if (!students || students.length === 0) {
+               return res.status(404).json({
+                    status: "Error",
+                    message: "No students found in this branch"
+               });
+          }
+          console.log("Number of students from", branchName, ":", students.length);
+          console.log("Students from branch", branchName, ":", students);
+          return res.status(200).json({
+               status: "Success",
+               totalStudents: students.length,
+               data: students
+          });
+
+
+     } catch (error) {
+          console.error("Error fetching students by branch:", error);
+          return res.status(500).json({
+               status: "Error",
+               message: "Internal Server Error"
+          });
+     }
+});
+
+
+
+// AN API that can access 2 different modules and provide results based on that....
+
+router.get('/getStudentplusBranch', async (req, res) => {
+     const { branchName } = req.body; // Or consider using req.query for GET
+
+     if (!branchName) {
+          return res.status(400).json({
+               status: "Error",
+               message: "Please enter a valid BranchName"
+          });
+     }
+
+     try {
+          // 1. Find students in this branch
+          const students = await StudentInfo.find({ studentBranch: branchName });
+
+          // 2. Find branch details
+          const branchDetails = await BranchInfo.findOne({ branchName });
+
+          if (!branchDetails) {
+               return res.status(404).json({
+                    status: "Error",
+                    message: `Branch "${branchName}" not found`
+               });
+          }
+
+          console.log(`Number of students from ${branchName}:`, students.length);
+          console.log(`Students from branch ${branchName}:`, students);
+          console.log(`Branch details:`, branchDetails);
+
+          return res.status(200).json({
+               status: "Success",
+               totalStudents: students.length,
+               branchDetails: branchDetails,
+               students: students
+          });
+
+     } catch (error) {
+          console.error("Error fetching students and branch info:", error);
+          return res.status(500).json({
+               status: "Error",
+               message: "Internal Server Error"
+          });
      }
 });
 
