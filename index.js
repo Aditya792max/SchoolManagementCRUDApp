@@ -6,6 +6,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
+app.use(express.json());
 
 app.use(cors());
 app.use(express.json());
@@ -17,6 +18,7 @@ app.listen(PORT, () => {
 
 
 const studentRoutes = require('./Routes/studentRoutes.js');
+const branchRoutes = require('./Routes/branchRoutes.js');
 const mongoURI = process.env.MONGODB_URI;
 
 console.log("We are gonna try to connect to mongoDB :");
@@ -28,4 +30,6 @@ mongoose.connect(mongoURI, {
 });
 
 app.use('/', studentRoutes);
+
+app.use('/', branchRoutes);
 
