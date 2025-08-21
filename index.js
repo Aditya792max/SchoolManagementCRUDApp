@@ -19,6 +19,7 @@ app.listen(PORT, () => {
 
 const studentRoutes = require('./Routes/studentRoutes.js');
 const branchRoutes = require('./Routes/branchRoutes.js');
+const scoreRoutes = require('./Routes/scoreRoutes.js');
 const mongoURI = process.env.MONGODB_URI;
 
 console.log("We are gonna try to connect to mongoDB :");
@@ -33,3 +34,4 @@ app.use('/', studentRoutes);
 
 app.use('/', branchRoutes);
 
+app.use('/', scoreRoutes);
